@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         'inter': ['Inter', 'sans-serif'],
+        'poppins': ['Poppins', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -73,14 +74,18 @@ export default {
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
-        'gradient-secondary': 'var(--gradient-secondary)',
-        'gradient-hero': 'var(--gradient-hero)',
-        'gradient-card': 'var(--gradient-card)',
+        'gradient-onyx': 'var(--gradient-onyx)',
+        'gradient-graphite': 'var(--gradient-graphite)',
+        'gradient-obsidian': 'var(--gradient-obsidian)',
+        'gradient-glass': 'var(--gradient-glass)',
+        'gradient-glass-border': 'var(--gradient-glass-border)',
       },
       boxShadow: {
-        'primary': 'var(--shadow-primary)',
+        'glass': 'var(--shadow-glass)',
+        'glass-inset': 'var(--shadow-glass-inset)',
         'card': 'var(--shadow-card)',
         'glow': 'var(--shadow-glow)',
+        'glow-intense': 'var(--shadow-glow-intense)',
       },
       borderRadius: {
         lg: "var(--radius)",

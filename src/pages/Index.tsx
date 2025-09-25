@@ -1,7 +1,7 @@
-import ResearchAssistant from '@/components/ResearchAssistant';
+import AIResearchAssistant from '@/components/AIResearchAssistant';
 
 const Index = () => {
-  return <ResearchAssistant />;
+  return <AIResearchAssistant />;
 };
 
 export default Index;
