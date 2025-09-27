@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import ExportOptions from './ExportOptions';
 import PaperDraftGenerator from './PaperDraftGenerator';
+import AcademicToneRewriter from './AcademicToneRewriter';
 
 interface Paper {
   id: string;
@@ -205,10 +206,11 @@ const ResearchResults: React.FC<ResearchResultsProps> = ({
           {/* Analysis Panel */}
           <div className="space-y-6">
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid grid-cols-3 glass mb-6">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="analysis">Analysis</TabsTrigger>
-                <TabsTrigger value="draft">Draft</TabsTrigger>
+              <TabsList className="grid grid-cols-4 glass mb-6">
+                <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
+                <TabsTrigger value="analysis" data-testid="tab-analysis">Analysis</TabsTrigger>
+                <TabsTrigger value="draft" data-testid="tab-draft">Draft</TabsTrigger>
+                <TabsTrigger value="rewriter" data-testid="tab-rewriter">Rewriter</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
@@ -349,6 +351,10 @@ const ResearchResults: React.FC<ResearchResultsProps> = ({
                   analysis={analysis}
                   searchQuery={searchQuery}
                 />
+              </TabsContent>
+
+              <TabsContent value="rewriter" className="space-y-6">
+                <AcademicToneRewriter />
               </TabsContent>
             </Tabs>
           </div>
