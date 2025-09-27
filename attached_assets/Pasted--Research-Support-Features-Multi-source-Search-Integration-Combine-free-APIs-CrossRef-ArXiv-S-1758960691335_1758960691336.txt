@@ -1,0 +1,131 @@
+🔍 Research Support Features
+
+Multi-source Search Integration
+
+Combine free APIs (CrossRef, ArXiv, Semantic Scholar, CORE) to give broader coverage.
+
+Ranking system: prioritize most cited / recent / peer-reviewed.
+
+Research Outline Auto-Builder
+
+From search results, generate structured outlines:
+
+Introduction
+
+Literature Review
+
+Methodology
+
+Results/Findings
+
+Discussion
+
+Conclusion
+
+Future Work
+
+Contextual Summarization
+
+Summaries in different modes: short notes, paragraph overview, key points.
+
+Highlight methodology vs. results separately for clarity.
+
+📝 Writing & Drafting Tools
+
+Research Paper Draft Generator
+
+Auto-generate a starter draft with placeholders for student’s own data.
+
+Example: “Insert your experiment results here.”
+
+Academic Tone Rewriter
+
+Rewrite casual text → formal academic writing.
+
+Suggest synonyms, formal phrases, and citations.
+
+Plagiarism & Paraphrasing Assistant
+
+Use open-source similarity checkers.
+
+Suggest alternative wording for flagged content.
+
+Citation Manager
+
+Auto-generate APA/MLA/IEEE references.
+
+Export to BibTeX, EndNote, or Zotero.
+
+⚡ Convenience Features
+
+Note-Taking Workspace
+
+Students can highlight AI outputs and save notes.
+
+Organize into folders by research topic.
+
+Export Options
+
+Export drafts as DOCX, LaTeX, PDF.
+
+Direct “Insert into Google Docs” integration.
+
+Smart Templates
+
+Pre-built templates:
+
+Thesis
+
+Term Paper
+
+Systematic Review
+
+Conference Paper
+
+🎓 Student-Friendly Extras
+
+AI Research Mentor Mode
+
+Answer questions like:
+“What is the gap in this research?”
+“Suggest hypotheses from these papers.”
+
+Slide Generator
+
+Convert paper summary → PowerPoint/Google Slides deck for class presentations.
+
+Mindmap & Knowledge Graphs
+
+Generate visual connections between keywords, authors, and citations.
+
+Collaborative Mode
+
+Allow multiple students to work on the same research draft in real-time.
+
+Multi-Language Support
+
+Translate summaries/papers into student’s preferred language.
+
+⚙️ Technical/Backend Enhancements
+
+Database Integration
+
+Save past searches, drafts, and notes (SQLite/MongoDB).
+
+AI Fine-Tuning for Research Style
+
+Train a small model on academic tone + sample research papers for better consistency.
+
+Modular Workflow Builder
+
+Visual pipeline: Search → Summarize → Outline → Draft → Export.
+
+Image & Equation Extraction
+
+Extract tables, equations, and figures from PDFs.
+
+Convert math into LaTeX.
+
+Offline/Low-Bandwidth Mode
+
+Store previously fetched papers locally for reuse.
