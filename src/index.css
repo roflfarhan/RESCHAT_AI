@@ -211,4 +211,105 @@ All colors MUST be HSL.
   ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, hsl(240 100% 70% / 0.5), hsl(280 100% 65% / 0.5));
   }
+
+  /* Welcome Screen Styles */
+  .welcome-gradient {
+    background: linear-gradient(135deg, 
+      hsl(240, 15%, 8%) 0%, 
+      hsl(250, 20%, 12%) 25%, 
+      hsl(260, 25%, 15%) 50%, 
+      hsl(250, 20%, 12%) 75%, 
+      hsl(240, 15%, 8%) 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease-in-out infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  /* Orbital animations for particles */
+  @keyframes orbit-1 {
+    0% { transform: translate(-50%, -50%) rotate(0deg) translateX(40px) scale(1); }
+    25% { transform: translate(-50%, -50%) rotate(90deg) translateX(40px) scale(0.8); }
+    50% { transform: translate(-50%, -50%) rotate(180deg) translateX(40px) scale(1); }
+    75% { transform: translate(-50%, -50%) rotate(270deg) translateX(40px) scale(0.8); }
+    100% { transform: translate(-50%, -50%) rotate(360deg) translateX(40px) scale(1); }
+  }
+
+  @keyframes orbit-2 {
+    0% { transform: translate(-50%, -50%) rotate(45deg) translateX(40px) scale(0.8); }
+    25% { transform: translate(-50%, -50%) rotate(135deg) translateX(40px) scale(1); }
+    50% { transform: translate(-50%, -50%) rotate(225deg) translateX(40px) scale(0.8); }
+    75% { transform: translate(-50%, -50%) rotate(315deg) translateX(40px) scale(1); }
+    100% { transform: translate(-50%, -50%) rotate(405deg) translateX(40px) scale(0.8); }
+  }
+
+  @keyframes orbit-3 {
+    0% { transform: translate(-50%, -50%) rotate(90deg) translateX(40px) scale(1); }
+    25% { transform: translate(-50%, -50%) rotate(180deg) translateX(40px) scale(0.8); }
+    50% { transform: translate(-50%, -50%) rotate(270deg) translateX(40px) scale(1); }
+    75% { transform: translate(-50%, -50%) rotate(360deg) translateX(40px) scale(0.8); }
+    100% { transform: translate(-50%, -50%) rotate(450deg) translateX(40px) scale(1); }
+  }
+
+  @keyframes orbit-4 {
+    0% { transform: translate(-50%, -50%) rotate(135deg) translateX(40px) scale(0.8); }
+    25% { transform: translate(-50%, -50%) rotate(225deg) translateX(40px) scale(1); }
+    50% { transform: translate(-50%, -50%) rotate(315deg) translateX(40px) scale(0.8); }
+    75% { transform: translate(-50%, -50%) rotate(405deg) translateX(40px) scale(1); }
+    100% { transform: translate(-50%, -50%) rotate(495deg) translateX(40px) scale(0.8); }
+  }
+
+  @keyframes orbit-5 {
+    0% { transform: translate(-50%, -50%) rotate(180deg) translateX(40px) scale(1); }
+    25% { transform: translate(-50%, -50%) rotate(270deg) translateX(40px) scale(0.8); }
+    50% { transform: translate(-50%, -50%) rotate(360deg) translateX(40px) scale(1); }
+    75% { transform: translate(-50%, -50%) rotate(450deg) translateX(40px) scale(0.8); }
+    100% { transform: translate(-50%, -50%) rotate(540deg) translateX(40px) scale(1); }
+  }
+
+  @keyframes orbit-6 {
+    0% { transform: translate(-50%, -50%) rotate(225deg) translateX(40px) scale(0.8); }
+    25% { transform: translate(-50%, -50%) rotate(315deg) translateX(40px) scale(1); }
+    50% { transform: translate(-50%, -50%) rotate(405deg) translateX(40px) scale(0.8); }
+    75% { transform: translate(-50%, -50%) rotate(495deg) translateX(40px) scale(1); }
+    100% { transform: translate(-50%, -50%) rotate(585deg) translateX(40px) scale(0.8); }
+  }
+
+  @keyframes orbit-7 {
+    0% { transform: translate(-50%, -50%) rotate(270deg) translateX(40px) scale(1); }
+    25% { transform: translate(-50%, -50%) rotate(360deg) translateX(40px) scale(0.8); }
+    50% { transform: translate(-50%, -50%) rotate(450deg) translateX(40px) scale(1); }
+    75% { transform: translate(-50%, -50%) rotate(540deg) translateX(40px) scale(0.8); }
+    100% { transform: translate(-50%, -50%) rotate(630deg) translateX(40px) scale(1); }
+  }
+
+  @keyframes orbit-8 {
+    0% { transform: translate(-50%, -50%) rotate(315deg) translateX(40px) scale(0.8); }
+    25% { transform: translate(-50%, -50%) rotate(405deg) translateX(40px) scale(1); }
+    50% { transform: translate(-50%, -50%) rotate(495deg) translateX(40px) scale(0.8); }
+    75% { transform: translate(-50%, -50%) rotate(585deg) translateX(40px) scale(1); }
+    100% { transform: translate(-50%, -50%) rotate(675deg) translateX(40px) scale(0.8); }
+  }
+
+  .animate-orbit-1 { animation: orbit-1 8s linear infinite; }
+  .animate-orbit-2 { animation: orbit-2 8s linear infinite; }
+  .animate-orbit-3 { animation: orbit-3 8s linear infinite; }
+  .animate-orbit-4 { animation: orbit-4 8s linear infinite; }
+  .animate-orbit-5 { animation: orbit-5 8s linear infinite; }
+  .animate-orbit-6 { animation: orbit-6 8s linear infinite; }
+  .animate-orbit-7 { animation: orbit-7 8s linear infinite; }
+  .animate-orbit-8 { animation: orbit-8 8s linear infinite; }
 }

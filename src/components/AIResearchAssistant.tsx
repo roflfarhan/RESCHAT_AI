@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import SearchModule from './SearchModule';
+import WelcomeScreen from './WelcomeScreen';
 import ResearchResults from './ResearchResults';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -190,7 +190,7 @@ const AIResearchAssistant: React.FC = () => {
     );
   }
 
-  return <SearchModule onSearch={handleSearch} isLoading={isSearching} />;
+  return <WelcomeScreen onSearch={handleSearch} isLoading={isSearching} />;
 };
 
 export default AIResearchAssistant;
