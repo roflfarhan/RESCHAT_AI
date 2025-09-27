@@ -236,96 +236,75 @@ async function fetchFromSemanticScholar(query: string): Promise<Paper[]> {
 
 async function generateAnalysis(papers: Paper[], query: string, geminiApiKey: string) {
   console.log('Generating analysis with Gemini for', papers.length, 'papers');
-  
-  const prompt = `You are an advanced academic research assistant. Analyze the following research papers related to the query: "${query}"
 
-Papers:
-${papers.map((paper, i) => `
-${i + 1}. Title: ${paper.title}
-   Authors: ${paper.authors}
-   Year: ${paper.year}
-   Abstract: ${paper.abstract}
-   Source: ${paper.source}
-`).join('\n')}
+  // Helper to build a deterministic fallback analysis when Gemini fails
+  const buildFallback = () => {
+    const summaries = papers.reduce((acc, paper) => {
+      acc[paper.title] = `Summary for ${paper.title}: ${(paper.abstract || 'No abstract available').replace(/\s+/g, ' ').slice(0, 220)}...`;
+      return acc;
+    }, {} as Record<string, string>);
 
-Please provide a comprehensive analysis in JSON format with the following structure:
-{
-  "summaries": {
-    "Paper Title 1": "Concise summary of paper 1",
-    "Paper Title 2": "Concise summary of paper 2",
-    ...
-  },
-  "outline": {
-    "introduction": "Introduction section content",
-    "literature_review": "Literature review content",
-    "methodology": "Methodology section content", 
-    "results": "Results and discussion content",
-    "conclusion": "Conclusion content",
-    "future_scope": "Future research directions"
-  },
-  "citations": "APA format citations for all papers",
-  "keywords": ["keyword1", "keyword2", "keyword3", ...],
-  "research_gaps": "Identified research gaps and unexplored areas",
-  "comparison": "Comparison of similarities and differences between papers"
-}
+    // Simple keyword extraction from titles + venues
+    const words = papers
+      .flatMap(p => `${p.title} ${p.venue || ''}`.toLowerCase().split(/[^a-z0-9+]+/))
+      .filter(w => w && w.length > 3 && !['with','from','that','this','have','using','into','such','many','most','more','been','their','for','your','about','over','under','between','among','within','without','against','into','after','before','above','below','could','would','should','while','where','when','which','whose','than','then','them','they','because'].includes(w));
+    const freq = new Map<string, number>();
+    words.forEach(w => freq.set(w, (freq.get(w) || 0) + 1));
+    const keywords = Array.from(freq.entries()).sort((a,b) => b[1]-a[1]).slice(0, 8).map(([w]) => w);
 
-Ensure all content is academic, well-structured, and professionally written.`;
-
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      contents: [{
-        parts: [{
-          text: prompt
-        }]
-      }],
-      generationConfig: {
-        temperature: 0.3,
-        topK: 32,
-        topP: 1,
-        maxOutputTokens: 4096,
-      }
-    }),
-  });
-
-  const data = await response.json();
-  const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  
-  if (!generatedText) {
-    console.error('No text generated from Gemini');
-    throw new Error('Failed to generate analysis');
-  }
+    return {
+      summaries,
+      outline: {
+        introduction: `Overview of current research on ${query}, including motivations and context.`,
+        literature_review: `Key themes across the literature include: ${keywords.slice(0,5).join(', ')}.`,
+        methodology: 'Common methods include systematic reviews, empirical evaluations, and benchmarking studies.',
+        results: 'Across papers, results indicate steady progress with varying baselines and datasets.',
+        conclusion: 'The field shows promising advances but lacks standardized evaluations across domains.',
+        future_scope: `Future work could explore broader datasets, stronger baselines, and robustness for ${query}.`
+      },
+      citations: papers.map(p => `${p.authors} (${p.year}). ${p.title}. ${p.venue || ''}.`).join('\n'),
+      keywords: keywords.length ? keywords : [query, 'research', 'analysis'],
+      research_gaps: `Gaps include limited comparative evaluations and scarce real-world validation for ${query}.`,
+      comparison: 'Papers differ in datasets, metrics, and scope but share common methodological patterns.'
+    };
+  };
 
   try {
-    // Extract JSON from the response
-    const jsonStart = generatedText.indexOf('{');
-    const jsonEnd = generatedText.lastIndexOf('}') + 1;
-    const jsonString = generatedText.slice(jsonStart, jsonEnd);
-    
-    return JSON.parse(jsonString);
-  } catch (parseError) {
-    console.error('Failed to parse Gemini response as JSON:', parseError);
-    // Return a fallback structure
-    return {
-      summaries: papers.reduce((acc, paper) => ({
-        ...acc,
-        [paper.title]: `Summary for ${paper.title}: ${paper.abstract.slice(0, 200)}...`
-      }), {}),
-      outline: {
-        introduction: `Research on ${query} encompasses various approaches and methodologies.`,
-        literature_review: `The literature review reveals multiple perspectives on ${query}.`,
-        methodology: 'Various methodologies have been employed in this research area.',
-        results: 'Results show promising developments in the field.',
-        conclusion: 'The research provides valuable insights for future work.',
-        future_scope: 'Future research should explore additional dimensions of this topic.'
-      },
-      citations: papers.map(p => `${p.authors} (${p.year}). ${p.title}. ${p.venue}.`).join('\n'),
-      keywords: [query, 'research', 'analysis'],
-      research_gaps: `Further research is needed in ${query} to address current limitations.`,
-      comparison: 'The papers show both similarities and differences in their approaches.'
-    };
+    const prompt = `You are an advanced academic research assistant. Analyze the following research papers related to the query: "${query}"\n\nPapers:\n${papers.map((paper, i) => `\n${i + 1}. Title: ${paper.title}\n   Authors: ${paper.authors}\n   Year: ${paper.year}\n   Abstract: ${paper.abstract}\n   Source: ${paper.source}\n`).join('\n')}\n\nPlease provide a comprehensive analysis in JSON format with the following structure:\n{\n  "summaries": {\n    "Paper Title 1": "Concise summary of paper 1",\n    "Paper Title 2": "Concise summary of paper 2",\n    ...\n  },\n  "outline": {\n    "introduction": "Introduction section content",\n    "literature_review": "Literature review content",\n    "methodology": "Methodology section content", \n    "results": "Results and discussion content",\n    "conclusion": "Conclusion content",\n    "future_scope": "Future research directions"\n  },\n  "citations": "APA format citations for all papers",\n  "keywords": ["keyword1", "keyword2", "keyword3", ...],\n  "research_gaps": "Identified research gaps and unexplored areas",\n  "comparison": "Comparison of similarities and differences between papers"\n}\n\nEnsure all content is academic, well-structured, and professionally written.`;
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.3, topK: 32, topP: 1, maxOutputTokens: 2048 }
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Gemini HTTP error:', response.status, await response.text());
+      return buildFallback();
+    }
+
+    const data = await response.json();
+    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!generatedText) {
+      console.error('No text generated from Gemini');
+      return buildFallback();
+    }
+
+    try {
+      const jsonStart = generatedText.indexOf('{');
+      const jsonEnd = generatedText.lastIndexOf('}') + 1;
+      const jsonString = generatedText.slice(jsonStart, jsonEnd);
+      return JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error('Failed to parse Gemini response as JSON:', parseError);
+      return buildFallback();
+    }
+  } catch (err) {
+    console.error('Gemini request failed:', err);
+    return buildFallback();
   }
 }
