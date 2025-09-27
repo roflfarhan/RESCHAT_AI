@@ -174,7 +174,20 @@ async function fetchFromAllSources(query: string): Promise<Paper[]> {
     console.error('Semantic Scholar fetch error:', error);
   }
 
-  return allPapers.slice(0, 15); // Limit to 15 papers total
+  try {
+    // Fetch from CORE
+    console.log('Fetching from CORE...');
+    const corePapers = await fetchFromCORE(query);
+    allPapers.push(...corePapers);
+    console.log(`CORE returned ${corePapers.length} papers`);
+  } catch (error) {
+    console.error('CORE fetch error:', error);
+  }
+
+  // Remove duplicates and apply intelligent ranking system
+  const deduplicatedPapers = deduplicatePapers(allPapers);
+  const rankedPapers = rankPapers(deduplicatedPapers);
+  return rankedPapers.slice(0, 20); // Increased to 20 papers total
 }
 
 async function fetchFromCrossRef(query: string): Promise<Paper[]> {
@@ -232,6 +245,133 @@ async function fetchFromSemanticScholar(query: string): Promise<Paper[]> {
     source: 'Semantic Scholar',
     citationCount: item.citationCount || 0
   })) || [];
+}
+
+async function fetchFromCORE(query: string): Promise<Paper[]> {
+  try {
+    const coreApiKey = Deno.env.get('CORE_API_KEY') || 'demo';
+    const response = await fetch(`https://core.ac.uk/api-v2/articles/search/${encodeURIComponent(query)}?page=1&pageSize=5&apiKey=${coreApiKey}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      console.error('CORE API response not ok:', response.status);
+      return [];
+    }
+    
+    const data = await response.json();
+    
+    return data.data?.map((item: any) => ({
+      title: item.title || 'No title',
+      authors: item.authors?.map((a: any) => typeof a === 'string' ? a : a.name || '').join(', ') || 'Unknown authors',
+      abstract: item.description || item.abstract || 'No abstract available',
+      year: item.yearPublished || new Date().getFullYear(),
+      venue: item.publisher || item.journals?.[0] || '',
+      url: item.urls?.[0] || item.downloadUrl || '',
+      source: 'CORE',
+      citationCount: item.citationCount || null,
+      doi: item.doi || ''
+    })) || [];
+  } catch (error) {
+    console.error('Error fetching from CORE:', error);
+    return [];
+  }
+}
+
+function deduplicatePapers(papers: Paper[]): Paper[] {
+  const seen = new Map<string, Paper>();
+  
+  for (const paper of papers) {
+    // Create a normalized key for deduplication
+    let key: string;
+    
+    if (paper.doi && paper.doi !== '') {
+      // Prefer DOI as the unique identifier
+      key = paper.doi.toLowerCase();
+    } else {
+      // Fall back to normalized title + year
+      const normalizedTitle = paper.title.toLowerCase()
+        .replace(/[^\w\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      key = `${normalizedTitle}-${paper.year}`;
+    }
+    
+    // Keep the paper with higher citation count if duplicate
+    if (!seen.has(key) || (paper.citationCount || 0) > (seen.get(key)!.citationCount || 0)) {
+      seen.set(key, paper);
+    }
+  }
+  
+  return Array.from(seen.values());
+}
+
+function rankPapers(papers: Paper[]): Paper[] {
+  return papers
+    .filter(paper => paper.title && paper.title !== 'No title')
+    .map(paper => ({
+      ...paper,
+      score: calculatePaperScore(paper)
+    }))
+    .sort((a, b) => (b as any).score - (a as any).score);
+}
+
+function calculatePaperScore(paper: Paper): number {
+  let score = 0;
+  
+  // Citation count weight (30% of score, reduced from 40%)
+  const citationCount = paper.citationCount;
+  if (citationCount !== null && citationCount !== undefined) {
+    const citationScore = Math.min(citationCount / 100, 1) * 30;
+    score += citationScore;
+  } else {
+    // Give a neutral score for missing citation data instead of 0
+    score += 15; // Half the maximum citation score
+  }
+  
+  // Recency weight (30% of score)
+  const currentYear = new Date().getFullYear();
+  const paperAge = currentYear - (paper.year || currentYear);
+  const recencyScore = Math.max(0, (10 - paperAge) / 10) * 30;
+  score += recencyScore;
+  
+  // Peer-review status weight (25% of score, increased from 20%)
+  const isPeerReviewed = isPeerReviewedVenue(paper.venue, paper.source);
+  score += isPeerReviewed ? 25 : 0;
+  
+  // Abstract quality weight (15% of score, increased from 10%)
+  const hasGoodAbstract = paper.abstract && 
+    paper.abstract !== 'No abstract available' && 
+    paper.abstract.length > 100;
+  score += hasGoodAbstract ? 15 : 0;
+  
+  return score;
+}
+
+function isPeerReviewedVenue(venue: string, source: string): boolean {
+  if (!venue) return false;
+  
+  // Known peer-reviewed venue patterns
+  const peerReviewedPatterns = [
+    /journal/i,
+    /proceedings/i,
+    /conference/i,
+    /transactions/i,
+    /IEEE/i,
+    /ACM/i,
+    /Nature/i,
+    /Science/i,
+    /Cell/i,
+    /Lancet/i,
+    /NEJM/i
+  ];
+  
+  // ArXiv is typically pre-print, not peer-reviewed
+  if (source === 'ArXiv') return false;
+  
+  return peerReviewedPatterns.some(pattern => pattern.test(venue));
 }
 
 async function generateAnalysis(papers: Paper[], query: string, geminiApiKey: string) {
