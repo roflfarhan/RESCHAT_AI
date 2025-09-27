@@ -61,8 +61,8 @@ const AIResearchAssistant: React.FC = () => {
 
   const handleSearch = async (query: string, files?: FileList) => {
     if (!currentUser) {
-      // For demo purposes, create a temporary user ID
-      const tempUserId = 'demo-user-' + Date.now();
+      // For demo purposes, create a temporary user ID using crypto.randomUUID()
+      const tempUserId = crypto.randomUUID();
       await performSearch(query, tempUserId, files);
       return;
     }

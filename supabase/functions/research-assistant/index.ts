@@ -52,7 +52,7 @@ serve(async (req) => {
 
     if (queryError) {
       console.error('Query storage error:', queryError);
-      throw new Error('Failed to store query');
+      throw new Error(`Failed to store query: ${queryError.message || 'Unknown database error'}`);
     }
 
     console.log('Query stored with ID:', queryData.id);
