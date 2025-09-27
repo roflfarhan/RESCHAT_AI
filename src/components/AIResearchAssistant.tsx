@@ -38,6 +38,7 @@ const AIResearchAssistant: React.FC = () => {
   const [papers, setPapers] = useState<Paper[]>([]);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [lastSearchQuery, setLastSearchQuery] = useState<string>('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -74,6 +75,7 @@ const AIResearchAssistant: React.FC = () => {
     setIsSearching(true);
     setPapers([]);
     setAnalysis(null);
+    setLastSearchQuery(query);
 
     try {
       toast({
@@ -182,6 +184,7 @@ const AIResearchAssistant: React.FC = () => {
       <ResearchResults
         papers={papers}
         analysis={analysis}
+        searchQuery={lastSearchQuery}
         onNewSearch={handleNewSearch}
       />
     );

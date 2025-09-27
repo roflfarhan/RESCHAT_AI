@@ -20,6 +20,7 @@ import {
   ChevronUp
 } from 'lucide-react';
 import ExportOptions from './ExportOptions';
+import PaperDraftGenerator from './PaperDraftGenerator';
 
 interface Paper {
   id: string;
@@ -52,12 +53,14 @@ interface Analysis {
 interface ResearchResultsProps {
   papers: Paper[];
   analysis: Analysis;
+  searchQuery: string;
   onNewSearch: () => void;
 }
 
 const ResearchResults: React.FC<ResearchResultsProps> = ({
   papers,
   analysis,
+  searchQuery,
   onNewSearch
 }) => {
   const [expandedPapers, setExpandedPapers] = useState<Set<string>>(new Set());
@@ -202,9 +205,10 @@ const ResearchResults: React.FC<ResearchResultsProps> = ({
           {/* Analysis Panel */}
           <div className="space-y-6">
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid grid-cols-2 glass mb-6">
+              <TabsList className="grid grid-cols-3 glass mb-6">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="analysis">Analysis</TabsTrigger>
+                <TabsTrigger value="draft">Draft</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
@@ -337,6 +341,14 @@ const ResearchResults: React.FC<ResearchResultsProps> = ({
                     </ScrollArea>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              <TabsContent value="draft" className="space-y-6">
+                <PaperDraftGenerator
+                  papers={papers}
+                  analysis={analysis}
+                  searchQuery={searchQuery}
+                />
               </TabsContent>
             </Tabs>
           </div>
