@@ -83,10 +83,10 @@ const ResearchResults: React.FC<ResearchResultsProps> = ({
 
   const exportData = {
     summary: analysis.comparison,
-    outline: analysis.outline,
+    outline: `Introduction: ${analysis.outline.introduction}\n\nLiterature Review: ${analysis.outline.literature_review}\n\nMethodology: ${analysis.outline.methodology}\n\nResults: ${analysis.outline.results}\n\nConclusion: ${analysis.outline.conclusion}\n\nFuture Scope: ${analysis.outline.future_scope}`,
     citations: analysis.citations,
     keywords: analysis.keywords,
-    research_gaps: analysis.research_gaps
+    gaps: analysis.research_gaps
   };
 
   return (
